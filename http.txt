@@ -1,0 +1,106 @@
+瀏覽器與服務器之間底層的連接協議是TCP協議.
+而上層負責具體數據傳輸的格式使用的應用協議為HTTP協議.
+
+HTTP協議有兩個版本: 1.0, 1.1
+現在基本維持1.1協議.
+
+客戶端與服務端之間使用HTTP協議時規定:
+一次請求一次響應. 服務端永遠不會主動發起請求.
+總是客戶端發起請求, 服務端處理有進行響應.
+1.0版本時: 一次TCP連接後, 一次請求一次響應完畢即段開連接.
+
+1.1版本時: 一次TCP連接後, 可以進行多次請求與響應後段開連接.
+
+1.1版本的這個改動可以降低資源開銷, 提高響應效率.
+
+HTTP協議規定了客戶端發送給服務端的[請求]格式
+以及服務端發送回客戶端的[響應]格式
+
+請求(request): 
+請求分為三部分組成:
+請求行, 消息頭, 消息正文
+
+請求行:
+請求行由三部分組成, 格式為:
+method uri protocol CRLF
+請求方法  資源路徑  協議版本CRLF
+CR: 回車, 對應的ASC編碼為13
+LF: 換行, 對應的ASC編碼為10
+CRLF標誌著請求行結束
+
+消息頭:
+消息頭的格式為:
+name: valueCRLF
+名子: 值CRLF
+
+消息頭由若干個name:value組成, 每一個都以CRLF結尾. 消息頭是客戶端發送的請求中的附帶信息.
+具體的名子和對應的值都在HTTP協議中有規定, 都含有具體意義. 當所有的消息頭都發送完畢後, 會在附帶一個
+單獨的CRLF表示所有消息頭發送完畢, 格式類似下面:
+name1:value1CRLF
+name2:value2CRLF
+...
+name n : value n CRLFCRLF
+可以看出, 最後一個頭信息發送完畢後, 會有兩個CRLF, 而第二個就表示所有的消息頭都發送完畢.
+
+消息正文:
+消息正文是二進制數據, 消息正文不是以CRLF結尾, 而具體的字節量是通過一個頭信息標註的, 該頭的名子是Content-Length
+例如:
+Content-Length:325CRLF
+通過解析這個頭可以得知, 消息正文有325個字節
+
+而這些字節具體表示甚麼類型的數據由另一個頭標註: Content-Type
+
+如果請求中的頭信息裡不含有Content-Length, 說明這個請求中不包含消息正文內容.
+
+一個標準HTTP請求的格式:
+GET /index.html HTTP/1.1CRLF
+
+Host: localhost:8080CRLF
+Connection: keep-aliveCRLF
+Upgrade-Insecure-Requests: 1CRLF
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)CRLF 
+AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36CRLF
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8CRLF
+Accept-Encoding: gzip, deflate, brCRLF
+Accept-Language: zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7CRLFCRLF
+
+
+1010101111000010101000001010......	消息正文
+
+響應(response): 
+響應分為三部分: 狀態行, 響應頭, 響應正文
+
+狀態行:
+狀態行的格式為: protocol status-code reason-phraseCRLF
+			協議版本		狀態代碼		狀態描述
+			
+瀏覽器在讀取響應中的狀態行時, 根據狀態代碼來判斷服務端是否正常響應客戶端.
+常見的狀態代碼:
+200: 正常響應
+404: 未找到客戶端要請求的資源
+500: 服務端處理發生未知錯誤
+
+狀態代碼在HTTP的分類:
+1xx: 保留部分
+2xx: 處理成功
+3xx: 重定向
+4xx: 請求不能正確執行, 通常是客戶端的請求有誤
+5xx: 服務端錯誤
+
+響應頭
+響應頭格式和意義與請求中的消息頭一致. 是服務端在進行響應時回饋給客戶端的附帶信息.
+name1:value1CRLF
+...
+namen:valuenCRLFCRLF
+最後一個頭發送完畢也會單獨發送一個CRLF表示所有的響應頭全部發送完畢.
+
+響應正文
+二進制數據, 是服務端實際響應給客戶端請求的資源對應內容. 具體數據多少字節, 以及這些字節對應的是什麼類型的數據由響應頭中的:
+Content-Length, Content-Type決定
+
+一個標準響應的內容大致為:
+HTTP/1.1 200 OKCRLF					狀態行
+Content-Length:235					響應頭
+Content-Type:text/html
+101011100001010000001111010...		響應正文
+

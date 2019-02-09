@@ -1,0 +1,38 @@
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>用戶註冊</title>
+	</head>
+	<body>
+		<center>
+			<h1>新用戶註冊</h1>
+			<!-- action是將表單內容提交到哪裡
+				可以使用相對路徑, 那麼相對的路徑是當前頁面的路徑.
+				請求當前頁面的路徑是:
+				http://localhost:8080/myweb/reg.html
+				那麼相對路徑就是
+				http://localhost:8080/myweb/
+				所以action="reg", 那麼該表單提交的地址:
+				http://localhost:8080/myweb/reg -->
+			<form action="reg" method="post">
+				<table border="1">
+					<tr>
+						<td>用戶名: </td>
+						<td><input type="text" size="30" name="username" /></td>
+					</tr>
+					<tr>
+						<td>密碼: </td>
+						<td><input type="password" size="30" name="password" /></td>
+					</tr>
+					<tr>
+						<td>匿名: </td>
+						<td><input type="text" size="30" name="nickname" /></td>
+					</tr>
+					<tr>
+						<td colspan="2" align="center"><input type="submit" value="註冊"></td>
+					</tr>
+				</table>
+			</form>
+		</center>
+	</body>
+</html>

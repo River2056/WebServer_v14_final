@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 初始化服務端的一些基礎信息 
+ 	URIEncoding: 解析請求時的轉碼操作 
+ 	由於請求中傳遞的參數不能含有中文這樣的字符, 
+ 	都會被轉換為"%E4%E1%E2"這樣的內容. 
+ 	我們在HttpRequest中是通過URLDecoder進行的磚換, 這裡就是指定轉換是使用的字符集 
+
+ 	port: 服務端開啟的服務端口(ServerSocket)
+ 	protocol: response在發送狀態行時的告知客戶端服務端使用的協議版本
+ 	threadPool: 服務端最大支持的併發線程數
+-->
+<server>
+	<Connector URIEncoding="utf-8" port="8080" protocol="HTTP/1.1" threadPool="50" />
+</server>
