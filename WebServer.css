@@ -1,0 +1,44 @@
+body {
+    font-family: monospace;
+    font-size: 20px;
+    background-color: aquamarine;
+}
+
+ul, ol {
+    list-style: none;
+}
+
+a {
+    color: blue;
+    text-decoration: none;
+}
+
+h2 {
+    font-size: 46px;
+}
+
+p {
+    font-family: 'Courier New', Courier, monospace;
+    text-indent: 2em;
+    padding-top: 20px;
+    /* line-height: 10px; */
+}
+
+.content-index {
+    background-color: #81a3db;
+    line-height: 50px;
+    letter-spacing: 3px;
+    padding: 20px;
+    font-size: 26px;
+}
+
+.request-info {
+    font-weight: bold;
+    border: 3px dotted gray;
+}
+
+.forward {
+    margin-bottom: 20px;
+    font-size: 30px;
+    font-style: oblique;
+}

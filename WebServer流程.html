@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>WebServer流程</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="WebServer.css" rel="stylesheet" />
+    <script src="main.js"></script>
+</head>
+<body>
+    <h2 id="top">WebServer主要流程: </h2>
+    <a href="#bottom" class="forward" id="index">Go to bottom</a>
+    <div class="content-index">
+        <ul>
+            <a href="#v1"><li>v1 --> 創建WebServer基礎</li></a>
+            <a href="#v2"><li>v2 --> 在ClientHandler中讀取客戶端請求</li></a>
+            <a href="#v3"><li>v3 --> 將客戶端發送過來的請求封裝到一個HTTPRequest對象中</li></a>
+            <a href="#v4"><li>v4 --> 在ClientHandler中添加響應代碼</li></a>
+            <a href="#v5"><li>v5 --> 將ClientHandler中直接響應客戶端的部分改為HttpResponse</li></a>
+            <a href="#v6"><li>v6 --> 在com.tedu.core中添加一個類HttpContext</li></a>
+            <a href="#v7"><li>v7 --> 完成HttpRequest中對消息頭的解析工作</li></a>
+            <a href="#v8"><li>v8 --> 完成註冊功能</li></a>
+            <a href="#v9"><li>v9 --> conf目錄, 添加web.xml, 修改HttpContext對於介質類型映射</li></a>
+            <a href="#v10"><li>v10 -> 添加登錄功能</li></a>
+            <a href="#v11"><li>v11 -> 代碼重構: 將ClientHandler的功能進行拆分, 明確每個類的功能</li></a>
+            <a href="#v12"><li>v12 -> 代碼重構: 將請求對應Servlet的處理代碼改變為使用反射機制.</li></a>
+            <a href="#v13"><li>v13 -> 重構HttpRequest類, 添加對Post請求形式中對form表單數據的解析功能.</li></a>
+            <a href="#v14"><li>v14 -> 重構代碼: 線程池, 404, 500頁面, 服務端基礎信息初始化配置文件</li></a>
+        </ul>
+    </div>
+    <a href="#index"><h2 id="v1">v1</h2></a>
+    <p>創建WebServer基礎的相關類和結構.</p>
+    <p>測試瀏覽器與服務端的連接.</p>
+    
+    <a href="#index"><h2 id="v2">v2</h2></a>
+    <p>在ClientHandler中讀取客戶端的請求內容</p>
+    <p>
+        一個標準HTTP請求的格式: <br /> <br />
+        <p>請求行:</p>
+        <p>GET /index.html HTTP/1.1CRLF</p>
+        <p>消息頭:</p>
+        <div class="request-info">
+            <p>
+                Host: localhost:8080CRLF <br />
+                Connection: keep-aliveCRLF <br />
+                Upgrade-Insecure-Requests: 1CRLF <br />
+                User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)CRLF <br />
+                AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36CRLF <br />
+                Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8CRLF <br />
+                Accept-Encoding: gzip, deflate, brCRLF <br />
+                Accept-Language: zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7CRLFCRLF <br />
+            </p>
+        </div>
+        <p>消息正文:</p>
+        <p>
+            1010101111000010101000001010...... 消息正文 <br />
+        </p>
+    </p>
+    
+    <a href="#index"><h2 id="v3">v3</h2></a>
+    <p>將客戶端發送過來的請求封裝到一個HTTPRequest對象中,</p>
+    <p>而不在ClientHandler中直接處理.</p>
+    
+    <a href="#index"><h2 id="v4">v4</h2></a>
+    <p>在項目中添加目錄webapps, 並在裡面添加一個子目錄myweb, 然後在其中存放我們定義的頁面.</p>
+    
+    <p>在ClientHandler中添加響應代碼, 將myweb中的index.html頁面發送回給客戶端.
+        客戶端測試的路徑為:
+        <em>//localhost:8080/myweb/index.html</em>
+        <br/> webapps/</p>
+    
+    <a href="#index"><h2 id="v5">v5</h2></a>
+    <p>將ClientHandler中直接響應客戶端的部分改為專門定義表示"HTTP響應"的類:HttpResponse.
+        重構代碼</p>
+    
+    <a href="#index"><h2 id="v6">v6</h2></a>
+    <p>在com.tedu.core中添加一個類HttpContext
+        該類用於定義相關Http協議的內容.
+        比如信息頭中Content-Type的值與文件後綴的關係等.</p>
+    
+    <p>context 上下文---環境</p>
+    
+    <p>在HttpResponse中進行代碼重構
+        添加一個Map屬性, 用於保存響應在中的所有響應頭信息.
+        添加常用頭的設置方法, 供外界設置響應頭:
+        setContentType(), setContentLength()
+        <br />
+        重新實現sendHeaders方法</p>
+    
+    <a href="#index"><h2 id="v7">v7</h2></a>
+    <p>完成HttpRequest中對消息頭的解析工作
+        1: 在HttpRequest中使用Map創建一個屬性headers用於保存所有客戶端送過來的消息頭信息
+        2: 添加方法parseHeaders, 用於解析所有的消息頭.</p>
+    
+    <a href="#index"><h2 id="v8">v8</h2></a>
+    <p>完成註冊功能</p>
+    
+    <p>通過該功能, 理解客戶端使用GET請求如何傳遞數據到服務端.
+        服務端如何解析這些數據</p>
+    
+    <p>GET請求是地址欄請求, 即: 所有請求的是通過地址欄形式將數據隨著URL連同發送至服務端.
+        格式:
+        protocol://host:port/requestStr?queryStr</p>
+    
+    <p>其中requestStr是請求的uri而queryStr是傳遞的參數.他們之間使用?作為分割.
+        而參數的格式定義為:
+        name1=value1&name2&value2......</p>
+    
+    <p>例如:
+        <em>http://localhost:8080/myweb/reg?name=zs&pwd=123456</em></p>
+    
+    <a href="#index"><h2 id="v9">v9</h2></a>
+    <p>在項目目錄中添加conf目錄, 並在裡面添加<strong>web.xml</strong>文件(該文件直接使用tomcat根目錄中conf目錄中的這個文件)
+        <strong>web.xml</strong>文件中紀錄了HTTP協議中頭信息Content-Type對應的介質類型.</p>
+    
+    <p>修改HttpContext對於介質類型映射的初始化工作, 將<strong>web.xml</strong>文件中的所有介質類型解析出來並存入到Map中替代原先寫死的內容.
+        使得我們的服務端可以支持所有介質類型.</p>
+    
+    <a href="#index"><h2 id="v10">v10</h2></a>
+    <p>添加登錄功能
+        在webapps/myweb下添加一個登錄頁面login.html
+        在ClientHandler中添加用於處理登錄功能的業務邏輯</p>
+    
+    <p>登錄流程:</p>
+
+    <ol>
+        <li>瀏覽器訪問登錄頁面
+        <em>http://localhost:8080/myweb/login.html</em></li>
+        
+        <li>在頁面中輸入登錄信息(用戶名, 密碼)
+        然後點擊登錄按鈕, 將表單內容提交到服務端</li>
+        
+        <li>ClientHandler根據request中的內容判斷是否為請求登錄業務, 若是, 則開始處理登錄.
+        通過request獲取用戶輸入的用戶名和密碼然後讀取user.txt文件中的每個用戶, <br/>比對用戶輸入
+        的用戶名密碼是否都一致, 都一致則跳轉到登錄成功的頁面. 否則跳轉到登錄失敗的頁面.</li>
+    </ol>
+    
+    <a href="#index"><h2 id="v11">v11</h2></a>
+    <p>代碼重構:</p>
+    <p>將ClientHandler的功能進行拆分, 明確每個類的功能</p>
+    
+    <p>ClientHandler用於處理客戶端請求, 然後響應客戶端
+        但是不負責處理具體業務處理. 相當於是一個分發請求的控制角色.</p>
+    
+    <p>將具體的業務(如註冊, 登錄)功能單獨定義一個功能類, 由ClientHandler統一調用.</p>
+    
+    <p>負責處理註冊業務的類: RegServlet</p>
+    <p>負責處理登錄業務的類: LoginServlet</p>
+    
+    <a href="#index"><h2 id="v12">v12</h2></a>
+    <p>代碼重構:</p>
+    <p>將請求對應Servlet的處理代碼改變為使用反射機制.</p>
+    
+    <p>思路:</p>
+    <p>創建一個Map, key為請求路徑, value為處理該請求的業務類某個Servlet的名字
+        ClientHandler當開始處理請求時使用請求路徑作為key去提取對應的Servlet的名字,
+        然後基於反射機制加載並實例化該Servlet, 然後調用它的service方法處理該業務.
+        這樣一來, 無論以後加什麼新的業務, ClientHandler都不用再進行修改.</p>
+    
+    <p>改動的內容:</p>
+
+    <ol>
+        <li>添加類ServerContext
+        該類負責存儲服務端主要的配置信息</li>
+
+        <li>在ServerContext中添加一個Map, 用來保存請求與對應的Servlet之間的映射關係
+        並添加初始化該Map的方法</li>
+
+        <li>修改ClientHandler的run方法. 基於Map並使用反射的方式加載Servlet並執行service處理業務</li>
+    </ol>
+    
+    <p>練習:
+        在項目目錄下的conf目錄中添加ServletMapping.xml文件
+        修改ServerContext的initServletMapping方法,
+        將初始化映射的Map方式改為解析ServletMapping.xml</p>
+    
+    <a href="#index"><h2 id="v13">v13</h2></a>
+    <p>重構HttpRequest類, 添加對Post請求形式中對form表單數據的解析功能.</p>
+    
+    <p>對於form表單提交, 有兩種方式
+        get, post
+        例如:
+        <p>&lt;form action="xxx" method="get"&gt;...&lt;/form&gt;</p>
+        &lt;form action="xxx" method="post"&gt;...&lt;/form&gt;
+    </p>
+    
+    <p>get請求會將form表單中所有輸入框內容體現在地址欄中.
+        post請求會將form表單中的內容放在請求中的消息正文部分.
+        並在消息頭中添加相關的頭信息, 告知服務端這是一個含有form表單的post請求
+        通常向註冊, 登錄這樣的功能會包含用戶隱私信息的請求, form都是使用post請求提交表單數據的.</p>
+    
+    <a href="#index"><h2 id="v14">v14</h2></a>
+    <p>重構代碼:</p>
+    <ol>
+        <li>處理客戶端請求的併發操作改為使用線程池完成</li>
+        <li>添加對404, 500頁面的跳轉</li>
+        <li>對服務端基礎信息的初始化工作改為 <br/> 
+            通過xml文件配置的形式(端口號, 線程池的線程數量, 協議版本)</li>
+    </ol>
+
+    <a href="#top" class="forward" id="bottom">Go back top</a>
+</body>
+</html>
